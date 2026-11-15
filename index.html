@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WORKOUT ADDA — Architectural Strength & Conditioning Club</title>
+  
+  <!-- Google Fonts: Staatliches, Host Grotesk, IBM Plex Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=IBM+Plex+Mono:wght@400;500;600;700&family=Staatliches&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            indigoDeep: '#210c6d',
+            forestSlate: '#172f2e',
+            amberGold: '#eea727',
+            pureBlack: '#000000',
+            crispWhite: '#ffffff',
+          },
+          fontFamily: {
+            display: ['"Staatliches"', 'sans-serif'],
+            sans: ['"Host Grotesk"', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Editorial Styling & Micro-Interactions */
+    body {
+      background-color: #210c6d;
+      color: #ffffff;
+      font-family: 'Host Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Character Roll Animation on Hover */
+    .char-roll-btn {
+      position: relative;
+      display: inline-flex;
+      overflow: hidden;
+      line-height: 1.1;
+    }
+    .char-roll-btn .char-inner {
+      display: inline-block;
+      transition: transform 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+    .char-roll-btn:hover .char-inner {
+      transform: translateY(-100%);
+    }
+    .char-roll-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1.5px;
+      background-color: #eea727;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+    .char-roll-btn:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* Editorial Grain Overlay */
+    .grain-overlay {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0424;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #eea727;
+      border-radius: 4px;
+    }
+
+    /* Drawer & Modal Animations */
+    .drawer-enter {
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .drawer-open {
+      clip-path: inset(0 0 0% 0);
+    }
+
+    /* Zone Image Crossfade */
+    .zone-img {
+      transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Bounce Subtle Arrow */
+    @keyframes floatArrow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+    .animate-float-arrow {
+      animation: floatArrow 1.8s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-amberGold selection:text-pureBlack">
+
+  <!-- =========================================================
+       1. STICKY GLASS / BLEND NAVIGATION BAR
+  ========================================================== -->
+  <header id="main-navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-5 sm:px-10 py-4 flex items-center justify-between bg-black/35 backdrop-blur-md border-b border-white/10">
+    <!-- Left: Custom Geometric SVG Emblem + Wordmark -->
+    <a href="#top" class="flex items-center gap-3 group focus:outline-none">
+      <div class="w-10 h-10 rounded-lg bg-amberGold flex items-center justify-center text-pureBlack transition-transform duration-300 group-hover:rotate-6 shadow-lg">
+        <!-- Geometric Architectural Barbell/Monogram SVG -->
+        <svg class="w-6 h-6" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10H8V22H4V10Z" fill="currentColor"/>
+          <path d="M24 10H28V22H24V10Z" fill="currentColor"/>
+          <path d="M10 7H13V25H10V7Z" fill="currentColor"/>
+          <path d="M19 7H22V25H19V7Z" fill="currentColor"/>
+          <rect x="2" y="14.5" width="28" height="3" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-display text-2xl sm:text-3xl tracking-wider leading-none text-white">WORKOUT ADDA</span>
+        <span class="font-mono text-[10px] tracking-[0.22em] text-amberGold uppercase">JAIPUR • ATHLETIC CLUB</span>
+      </div>
+    </a>
+
+    <!-- Right: Animated Character-Roll JOIN NOW + MENU Trigger -->
+    <div class="flex items-center gap-5 sm:gap-8">
+      <button onclick="openTrialModal('All-Access Club Trial')" class="hidden sm:inline-flex items-center gap-2 font-mono text-xs sm:text-sm font-semibold tracking-widest uppercase text-white hover:text-amberGold transition-colors py-1">
+        <span class="char-roll-btn" data-roll="JOIN NOW">
+          <span class="char-inner">JOIN NOW<br><span class="text-amberGold">JOIN NOW</span></span>
+        </span>
+      </button>
+
+      <button id="menu-open-btn" aria-label="Open Navigation Menu" class="flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack text-white border border-white/20 transition-all duration-300 cursor-pointer group">
+        <span class="font-mono text-xs font-semibold tracking-widest uppercase">MENU</span>
+        <div class="w-4 flex flex-col gap-1">
+          <span class="w-full h-[1.5px] bg-current transition-transform group-hover:translate-x-0.5"></span>
+          <span class="w-3/4 h-[1.5px] bg-current self-end transition-transform group-hover:-translate-x-0.5"></span>
+        </div>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       FULL-SCREEN INTERACTIVE MENU OVERLAY DRAWER
+  ========================================================== -->
+  <div id="menu-drawer" class="fixed inset-0 z-[60] bg-pureBlack text-white drawer-enter pointer-events-none flex flex-col justify-between overflow-y-auto">
+    <!-- Top Drawer Bar -->
+    <div class="px-5 sm:px-10 py-5 flex items-center justify-between border-b border-white/15">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-amberGold flex items-center justify-center text-pureBlack">
+          <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none">
+            <path d="M4 10H8V22H4V10Z" fill="currentColor"/>
+            <path d="M24 10H28V22H24V10Z" fill="currentColor"/>
+            <path d="M10 7H13V25H10V7Z" fill="currentColor"/>
+            <path d="M19 7H22V25H19V7Z" fill="currentColor"/>
+            <rect x="2" y="14.5" width="28" height="3" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="font-display text-2xl tracking-wider">WORKOUT ADDA</span>
+      </div>
+
+      <button id="menu-close-btn" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack text-white border border-white/20 transition-all duration-300 cursor-pointer group">
+        <span class="font-mono text-xs font-semibold tracking-widest uppercase">CLOSE</span>
+        <span class="text-lg leading-none transition-transform duration-300 group-hover:rotate-90">✕</span>
+      </button>
+    </div>
+
+    <!-- Main Drawer Grid -->
+    <div class="max-w-7xl w-full mx-auto px-5 sm:px-10 py-8 lg:py-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center my-auto">
+      <!-- Staggered Large Navigation Links -->
+      <nav class="lg:col-span-7 flex flex-col space-y-2 sm:space-y-3">
+        <span class="font-mono text-xs text-amberGold tracking-[0.25em] uppercase mb-2">NAVIGATION DIRECTORY</span>
+        <a href="#zones" class="drawer-link font-display text-5xl sm:text-6xl md:text-7xl tracking-wide hover:text-amberGold hover:translate-x-3 transition-all duration-300 flex items-baseline gap-4">
+          <span class="font-mono text-xs text-white/40">01</span> TRAINING ZONES
+        </a>
+        <a href="#manifesto" class="drawer-link font-display text-5xl sm:text-6xl md:text-7xl tracking-wide hover:text-amberGold hover:translate-x-3 transition-all duration-300 flex items-baseline gap-4">
+          <span class="font-mono text-xs text-white/40">02</span> TRANSFORMATIONS & STATS
+        </a>
+        <a href="#memberships" class="drawer-link font-display text-5xl sm:text-6xl md:text-7xl tracking-wide hover:text-amberGold hover:translate-x-3 transition-all duration-300 flex items-baseline gap-4">
+          <span class="font-mono text-xs text-white/40">03</span> MEMBERSHIP PLANS
+        </a>
+        <a href="#coaches" class="drawer-link font-display text-5xl sm:text-6xl md:text-7xl tracking-wide hover:text-amberGold hover:translate-x-3 transition-all duration-300 flex items-baseline gap-4">
+          <span class="font-mono text-xs text-white/40">04</span> ELITE COACHES
+        </a>
+        <a href="#faq" class="drawer-link font-display text-5xl sm:text-6xl md:text-7xl tracking-wide hover:text-amberGold hover:translate-x-3 transition-all duration-300 flex items-baseline gap-4">
+          <span class="font-mono text-xs text-white/40">05</span> FACILITIES & FAQ
+        </a>
+        <a href="#footer" class="drawer-link font-display text-5xl sm:text-6xl md:text-7xl tracking-wide hover:text-amberGold hover:translate-x-3 transition-all duration-300 flex items-baseline gap-4">
+          <span class="font-mono text-xs text-white/40">06</span> CONTACT & LOCATION
+        </a>
+      </nav>
+
+      <!-- Featured Promo Cards & Club Hours -->
+      <div class="lg:col-span-5 flex flex-col gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+          <!-- Promo Card 1 -->
+          <div onclick="closeDrawer(); openEventModal();" class="group relative rounded-2xl overflow-hidden border border-white/15 bg-indigoDeep/60 cursor-pointer">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=80" alt="Hyrox & Strength Showdown" class="w-full h-36 object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-5 flex flex-col justify-end">
+              <span class="font-mono text-[10px] tracking-widest uppercase text-amberGold mb-1">FEATURED ARENA EVENT</span>
+              <h4 class="font-display text-2xl tracking-wide text-white">HYROX & STRENGTH SHOWDOWN 2026</h4>
+            </div>
+          </div>
+
+          <!-- Promo Card 2 -->
+          <div onclick="closeDrawer(); openTrialModal('Complimentary 3-Day VIP Pass');" class="group relative rounded-2xl overflow-hidden border border-white/15 bg-forestSlate/80 cursor-pointer">
+            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80" alt="3-Day VIP Experience" class="w-full h-36 object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-5 flex flex-col justify-end">
+              <span class="font-mono text-[10px] tracking-widest uppercase text-amberGold mb-1">NEW MEMBER PASS</span>
+              <h4 class="font-display text-2xl tracking-wide text-white">CLAIM 3-DAY VIP CLUB EXPERIENCE</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Club Hours & Location Box -->
+        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 flex flex-col sm:flex-row lg:flex-col justify-between gap-4">
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-amberGold mb-1">OPERATING HOURS</p>
+            <p class="text-sm text-white/90">Mon – Sat: 05:00 AM – 11:00 PM</p>
+            <p class="text-sm text-white/70">Sunday: 07:00 AM – 04:00 PM (Open Turf & Recovery)</p>
+          </div>
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-amberGold mb-1">FLAGSHIP ARENA</p>
+            <p class="text-sm text-white/90">Level 3, Apex Icon Tower, C-Scheme, Jaipur, RJ</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       2. FULL-VIEWPORT HERO SECTION
+  ========================================================== -->
+  <section id="top" class="relative min-h-screen w-full bg-pureBlack flex flex-col justify-between pt-28 pb-8 px-5 sm:px-10 overflow-hidden">
+    <!-- Full-Bleed Moody Gym Photography Background -->
+    <div class="absolute inset-0 z-0">
+      <img 
+        src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=2000&q=85" 
+        alt="Workout Adda Luxury Strength Arena" 
+        class="w-full h-full object-cover object-center scale-105 brightness-[0.55] contrast-110"
+      />
+      <!-- Atmospheric Vignette & Bottom Fade into #210c6d -->
+      <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-black/70"></div>
+      <div class="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-indigoDeep via-indigoDeep/75 to-transparent"></div>
+    </div>
+
+    <!-- Top-Right Micro Badge -->
+    <div class="relative z-10 flex justify-between items-start mt-4">
+      <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
+        <span class="w-2 h-2 rounded-full bg-amberGold animate-pulse"></span>
+        <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-white/90">JAIPUR'S PREMIER PERFORMANCE SANCTUARY</span>
+      </div>
+      <div class="hidden md:block text-right font-mono text-xs text-white/60 tracking-widest">
+        26.9124° N, 75.7873° E<br>EST. 2021 • 18,000 SQ. FT.
+      </div>
+    </div>
+
+    <!-- Center Editorial Headline -->
+    <div class="relative z-10 my-auto py-12 max-w-5xl">
+      <p class="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-amberGold mb-3">ARCHITECTURAL STRENGTH & CONDITIONING</p>
+      <h1 class="font-display text-6xl sm:text-8xl md:text-9xl leading-[0.88] tracking-tight text-white uppercase">
+        FORGE UNBREAKABLE <span class="text-amberGold">DISCIPLINE.</span>
+      </h1>
+    </div>
+
+    <!-- Bottom Grid: Mission Statement (Left) + Floating Event Card (Center) + Scroll Indicator (Right) -->
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pt-4">
+      <!-- Bottom Left Editorial Mission Statement -->
+      <div class="lg:col-span-5">
+        <p class="text-base sm:text-lg text-white/90 font-light leading-relaxed max-w-xl">
+          At <strong class="font-semibold text-white">Workout Adda</strong>, we don’t just stack weights. We architect transformations that make your heart race, your discipline unbreakable, and your body feel 10 years stronger.
+        </p>
+      </div>
+
+      <!-- Center-Bottom Interactive Floating Event Promo Card -->
+      <div class="lg:col-span-5 flex justify-start lg:justify-center">
+        <button onclick="openEventModal()" class="group text-left w-full max-w-md rounded-2xl bg-black/75 hover:bg-black/90 backdrop-blur-xl border border-white/20 hover:border-amberGold p-4 transition-all duration-300 shadow-2xl flex items-center gap-4 cursor-pointer">
+          <div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-white/15">
+            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=400&q=80" alt="Hyrox Showdown" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+            <div class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-amberGold text-pureBlack font-mono text-[9px] font-bold">LIVE</div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="font-mono text-[10px] tracking-widest uppercase text-amberGold">UPCOMING CHALLENGE • DEC 20</span>
+              <span class="text-amberGold text-sm transition-transform duration-300 group-hover:translate-x-1">↗</span>
+            </div>
+            <h3 class="font-display text-2xl tracking-wide text-white truncate">HYROX & STRENGTH SHOWDOWN 2026</h3>
+            <p class="font-mono text-[11px] text-white/65 truncate">Tap to claim Athlete or Spectator Pass →</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Bottom Right Animated Scroll Indicator -->
+      <div class="lg:col-span-2 flex justify-start lg:justify-end">
+        <a href="#manifesto" class="inline-flex items-center gap-2 font-mono text-xs tracking-[0.2em] uppercase text-white/80 hover:text-amberGold transition-colors py-2">
+          <span>UPCOMING EVENTS</span>
+          <span class="text-amberGold text-base animate-float-arrow">↓</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       3. BRAND MANIFESTO & ANIMATED COUNTER STATS SECTION (#210c6d)
+  ========================================================== -->
+  <section id="manifesto" class="relative bg-indigoDeep grain-overlay py-24 sm:py-32 px-5 sm:px-10 border-b border-white/10">
+    <div class="max-w-6xl mx-auto">
+      <!-- Centered Bold Manifesto -->
+      <div class="text-center max-w-4xl mx-auto mb-20">
+        <span class="inline-block font-mono text-xs tracking-[0.28em] uppercase text-amberGold mb-5 px-3.5 py-1 rounded-full bg-white/5 border border-white/10">
+          THE WORKOUT ADDA STANDARD
+        </span>
+        <h2 class="font-display text-4xl sm:text-6xl md:text-7xl leading-[0.95] tracking-tight text-white uppercase mb-6">
+          ENGINEERED FOR ATHLETES, EXECUTIVES & RELENTLESS BEGINNERS ALIKE.
+        </h2>
+        <p class="text-base sm:text-xl text-white/80 font-light leading-relaxed max-w-2xl mx-auto">
+          Calibrated Olympic steel, competition turf, clinical recovery suites, and precision coaching—unified under one moody, high-voltage roof in the heart of Jaipur.
+        </p>
+      </div>
+
+      <!-- 4-Column Metric Bar with Vertical Dividers & Scroll-Triggered Counters -->
+      <div id="stats-grid" class="grid grid-cols-2 lg:grid-cols-4 rounded-3xl bg-white/[0.04] backdrop-blur-sm border border-white/15 divide-y lg:divide-y-0 lg:divide-x divide-white/15 overflow-hidden">
+        <!-- Stat 1 -->
+        <div class="p-8 sm:p-10 flex flex-col items-center text-center group hover:bg-white/[0.03] transition-colors">
+          <div class="font-display text-6xl sm:text-7xl text-amberGold tracking-wide mb-2">
+            <span class="counter" data-target="45" data-suffix="+">0</span>
+          </div>
+          <span class="font-mono text-xs tracking-[0.2em] uppercase text-white/90 font-semibold">EQUIPMENT & RIGS</span>
+          <span class="text-xs text-white/50 mt-1">Eleiko & Hammer Strength</span>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="p-8 sm:p-10 flex flex-col items-center text-center group hover:bg-white/[0.03] transition-colors">
+          <div class="font-display text-6xl sm:text-7xl text-white tracking-wide mb-2">
+            <span class="counter" data-target="18000" data-comma="true">0</span>
+          </div>
+          <span class="font-mono text-xs tracking-[0.2em] uppercase text-amberGold font-semibold">SQ. FT. ARENA</span>
+          <span class="text-xs text-white/50 mt-1">Acoustic & Climate Controlled</span>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="p-8 sm:p-10 flex flex-col items-center text-center group hover:bg-white/[0.03] transition-colors">
+          <div class="font-display text-6xl sm:text-7xl text-amberGold tracking-wide mb-2">
+            <span class="counter" data-target="4.9" data-decimals="1" data-suffix="★">0</span>
+          </div>
+          <span class="font-mono text-xs tracking-[0.2em] uppercase text-white/90 font-semibold">MEMBER RATING</span>
+          <span class="text-xs text-white/50 mt-1">2,500+ Verified Reviews</span>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="p-8 sm:p-10 flex flex-col items-center text-center group hover:bg-white/[0.03] transition-colors">
+          <div class="font-display text-6xl sm:text-7xl text-white tracking-wide mb-2">
+            <span class="counter" data-target="100" data-suffix="%">0</span>
+          </div>
+          <span class="font-mono text-xs tracking-[0.2em] uppercase text-amberGold font-semibold">RAW ENERGY</span>
+          <span class="text-xs text-white/50 mt-1">Zero Ego • Pure Grit</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       4. STICKY SPLIT-SCREEN "SIGNATURE TRAINING ZONES" (#172f2e)
+  ========================================================== -->
+  <section id="zones" class="relative bg-forestSlate text-white py-24 sm:py-32 px-5 sm:px-10">
+    <div class="max-w-7xl mx-auto">
+      <!-- Section Header -->
+      <div class="max-w-4xl mb-16">
+        <span class="font-mono text-xs tracking-[0.28em] uppercase text-amberGold block mb-3">SIGNATURE ZONES</span>
+        <h2 class="font-display text-5xl sm:text-7xl leading-[0.92] tracking-tight uppercase">
+          OUR PORTFOLIO OF TRAINING SHOWCASES THE DIVERSITY OF OUR GRIND.
+        </h2>
+      </div>
+
+      <!-- Desktop Sticky 50/50 Split Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        
+        <!-- Left Side: Sticky Full-Height Cross-Fading Visual Showcase + Rolling Counter -->
+        <div class="lg:col-span-6 lg:sticky lg:top-28">
+          <div class="relative w-full h-[420px] sm:h-[540px] lg:h-[620px] rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-pureBlack">
+            <!-- Dynamic Cross-Fading Images -->
+            <img id="zone-img-0" src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=1200&q=85" alt="Iron & Strength Floor" class="zone-img absolute inset-0 w-full h-full object-cover opacity-100 scale-100" />
+            <img id="zone-img-1" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=85" alt="Turf & Functional Arena" class="zone-img absolute inset-0 w-full h-full object-cover opacity-0 scale-105" />
+            <img id="zone-img-2" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=85" alt="HIIT & Conditioning Lab" class="zone-img absolute inset-0 w-full h-full object-cover opacity-0 scale-105" />
+            <img id="zone-img-3" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1200&q=85" alt="Recovery & Ice Bath Lounge" class="zone-img absolute inset-0 w-full h-full object-cover opacity-0 scale-105" />
+            <img id="zone-img-4" src="https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1200&q=85" alt="Boxing & MMA Cage" class="zone-img absolute inset-0 w-full h-full object-cover opacity-0 scale-105" />
+            <img id="zone-img-5" src="https://images.unsplash.com/photo-1622484211148-716598e30f92?auto=format&fit=crop&w=1200&q=85" alt="Nutrition & Shake Bar" class="zone-img absolute inset-0 w-full h-full object-cover opacity-0 scale-105" />
+
+            <!-- Gradient Scrim -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30"></div>
+
+            <!-- Top-Left Rolling Counter Pill -->
+            <div class="absolute top-5 left-5 px-4 py-2 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amberGold"></span>
+              <span id="zone-counter" class="font-mono text-sm font-semibold tracking-widest text-white">01 / 06</span>
+            </div>
+
+            <!-- Bottom Overlay Active Zone Display -->
+            <div class="absolute bottom-6 left-6 right-6">
+              <span id="zone-active-tag" class="font-mono text-xs tracking-[0.25em] uppercase text-amberGold block mb-1">HEAVY COMPOUND SANCTUARY</span>
+              <h3 id="zone-active-title" class="font-display text-4xl sm:text-5xl tracking-wide text-white uppercase">01. IRON & STRENGTH FLOOR</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Scrollable Interactive Zone Cards -->
+        <div class="lg:col-span-6 flex flex-col gap-6">
+          <!-- Zone 01 -->
+          <div data-zone="0" data-tag="HEAVY COMPOUND SANCTUARY" data-title="01. IRON & STRENGTH FLOOR" class="zone-card group rounded-3xl p-7 sm:p-9 bg-white/[0.06] border-2 border-amberGold transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest text-amberGold uppercase">ZONE 01 • 6,500 SQ. FT.</span>
+              <span class="w-8 h-8 rounded-full bg-amberGold text-pureBlack flex items-center justify-center font-mono text-xs font-bold">01</span>
+            </div>
+            <h3 class="font-display text-3xl sm:text-4xl tracking-wide text-white mb-3">01. IRON & STRENGTH FLOOR</h3>
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-5">
+              Outfitted with calibrated powerlifting plates, 8 custom monolift squat racks, deadlift shock-absorption platforms, and dumbells scaling up to 75 kg.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">ELEIKO BARS</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">PLATE-LOADED ISO</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">CHALK FRIENDLY</span>
+            </div>
+          </div>
+
+          <!-- Zone 02 -->
+          <div data-zone="1" data-tag="EXPLOSIVE SPEED & SLED TRACK" data-title="02. TURF & FUNCTIONAL ARENA" class="zone-card group rounded-3xl p-7 sm:p-9 bg-white/[0.03] hover:bg-white/[0.06] border-2 border-white/10 transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest text-amberGold uppercase">ZONE 02 • 40-METER SPRINT LANE</span>
+              <span class="w-8 h-8 rounded-full bg-white/10 text-white group-hover:bg-amberGold group-hover:text-pureBlack transition-colors flex items-center justify-center font-mono text-xs font-bold">02</span>
+            </div>
+            <h3 class="font-display text-3xl sm:text-4xl tracking-wide text-white mb-3">02. TURF & FUNCTIONAL ARENA</h3>
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-5">
+              High-density shock-padded emerald turf engineered for prowler sled pushes, tire flips, kettlebell complexes, yoke carries, and athletic agility drills.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">PROWLER SLEDS</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">PLYO BOXES</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">BATTLE ROPES</span>
+            </div>
+          </div>
+
+          <!-- Zone 03 -->
+          <div data-zone="2" data-tag="METABOLIC ENGINE & ENDURANCE" data-title="03. HIIT & CONDITIONING LAB" class="zone-card group rounded-3xl p-7 sm:p-9 bg-white/[0.03] hover:bg-white/[0.06] border-2 border-white/10 transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest text-amberGold uppercase">ZONE 03 • HEART-RATE TELEMETRY</span>
+              <span class="w-8 h-8 rounded-full bg-white/10 text-white group-hover:bg-amberGold group-hover:text-pureBlack transition-colors flex items-center justify-center font-mono text-xs font-bold">03</span>
+            </div>
+            <h3 class="font-display text-3xl sm:text-4xl tracking-wide text-white mb-3">03. HIIT & CONDITIONING LAB</h3>
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-5">
+              Darkened acoustic chamber loaded with Concept2 RowErgs, SkiErgs, Assault AirBikes, and curved woodway treadmills synced to live heart-rate leaderboards.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">CONCEPT2 ERGS</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">ASSAULT BIKES</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">HYROX PREP</span>
+            </div>
+          </div>
+
+          <!-- Zone 04 -->
+          <div data-zone="3" data-tag="CONTRAST THERAPY & REGENERATION" data-title="04. RECOVERY & ICE BATH LOUNGE" class="zone-card group rounded-3xl p-7 sm:p-9 bg-white/[0.03] hover:bg-white/[0.06] border-2 border-white/10 transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest text-amberGold uppercase">ZONE 04 • 4°C COLD PLUNGE & SAUNA</span>
+              <span class="w-8 h-8 rounded-full bg-white/10 text-white group-hover:bg-amberGold group-hover:text-pureBlack transition-colors flex items-center justify-center font-mono text-xs font-bold">04</span>
+            </div>
+            <h3 class="font-display text-3xl sm:text-4xl tracking-wide text-white mb-3">04. RECOVERY & ICE BATH LOUNGE</h3>
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-5">
+              Accelerate muscle repair and nervous system reset with temperature-controlled 4°C cold plunges, cedarwood infrared saunas, and Normatec compression boots.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">COLD PLUNGE</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">INFRARED SAUNA</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">NORMATEC BOOTS</span>
+            </div>
+          </div>
+
+          <!-- Zone 05 -->
+          <div data-zone="4" data-tag="COMBAT STRIKING & FOOTWORK" data-title="05. BOXING & MMA CAGE" class="zone-card group rounded-3xl p-7 sm:p-9 bg-white/[0.03] hover:bg-white/[0.06] border-2 border-white/10 transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest text-amberGold uppercase">ZONE 05 • PRO STRIKING DECK</span>
+              <span class="w-8 h-8 rounded-full bg-white/10 text-white group-hover:bg-amberGold group-hover:text-pureBlack transition-colors flex items-center justify-center font-mono text-xs font-bold">05</span>
+            </div>
+            <h3 class="font-display text-3xl sm:text-4xl tracking-wide text-white mb-3">05. BOXING & MMA CAGE</h3>
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-5">
+              Regulation 18-foot sparring ring, 12 heavy teardrop leather bags, speed-bag platforms, and padded grappling mats coached by national-level combat athletes.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">HEAVY BAGS</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">SPARRING RING</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">PAD WORK</span>
+            </div>
+          </div>
+
+          <!-- Zone 06 -->
+          <div data-zone="5" data-tag="MACRO-ENGINEERED FUEL" data-title="06. NUTRITION & SHAKE BAR" class="zone-card group rounded-3xl p-7 sm:p-9 bg-white/[0.03] hover:bg-white/[0.06] border-2 border-white/10 transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest text-amberGold uppercase">ZONE 06 • POST-WORKOUT REFUEL</span>
+              <span class="w-8 h-8 rounded-full bg-white/10 text-white group-hover:bg-amberGold group-hover:text-pureBlack transition-colors flex items-center justify-center font-mono text-xs font-bold">06</span>
+            </div>
+            <h3 class="font-display text-3xl sm:text-4xl tracking-wide text-white mb-3">06. NUTRITION & SHAKE BAR</h3>
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-5">
+              Architectural espresso and recovery lounge serving cold-pressed adaptogen shots, grass-fed whey isolate smoothies, and macro-counted meal bowls.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">40G PROTEIN SHAKES</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">COLD BREW</span>
+              <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-black/40 border border-white/10 text-white/80">INBODY SCAN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       5. INTERACTIVE MEMBERSHIP & PROGRAMS SHOWCASE (#210c6d)
+  ========================================================== -->
+  <section id="memberships" class="relative bg-indigoDeep grain-overlay py-24 sm:py-32 px-5 sm:px-10 border-t border-white/10">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+        <div>
+          <span class="font-mono text-xs tracking-[0.28em] uppercase text-amberGold block mb-3">MEMBERSHIP ARCHITECTURES</span>
+          <h2 class="font-display text-5xl sm:text-7xl leading-[0.92] tracking-tight text-white uppercase">
+            CHOOSE YOUR COMMITMENT LEVEL.
+          </h2>
+        </div>
+        <p class="text-white/75 max-w-md text-sm sm:text-base">
+          Every membership includes full access to all 6 training zones, complimentary InBody 770 composition diagnostics, and locker amenities.
+        </p>
+      </div>
+
+      <!-- 4 Membership Tiers Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Tier 1: Day Pass -->
+        <div class="rounded-3xl bg-white/[0.05] border border-white/15 p-7 flex flex-col justify-between hover:border-amberGold/70 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest uppercase text-white/60">DROP-IN ACCESS</span>
+              <span class="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-white/10 text-white">24 HRS</span>
+            </div>
+            <h3 class="font-display text-4xl tracking-wide text-white mb-2">DAY PASS</h3>
+            <div class="flex items-baseline gap-1 my-4">
+              <span class="font-display text-5xl text-amberGold">₹799</span>
+              <span class="font-mono text-xs text-white/60">/ SINGLE VISIT</span>
+            </div>
+            <p class="text-sm text-white/75 mb-6">Ideal for visiting athletes, travelers, or experiencing the club atmosphere before committing.</p>
+            <ul class="space-y-3 text-sm text-white/85 mb-8 border-t border-white/10 pt-5">
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Full Strength & Turf Floor Access</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Towel & Luxury Locker Service</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> 1 Complimentary Espresso Shot</li>
+            </ul>
+          </div>
+          <button onclick="openTrialModal('Day Pass — ₹799')" class="w-full py-3.5 px-5 rounded-xl bg-white/10 hover:bg-amberGold text-white hover:text-pureBlack font-mono text-xs font-semibold tracking-widest uppercase transition-all cursor-pointer">
+            BOOK DAY PASS →
+          </button>
+        </div>
+
+        <!-- Tier 2: Monthly Grind -->
+        <div class="rounded-3xl bg-white/[0.05] border border-white/15 p-7 flex flex-col justify-between hover:border-amberGold/70 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest uppercase text-white/60">FLEXIBLE CYCLE</span>
+              <span class="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-white/10 text-white">30 DAYS</span>
+            </div>
+            <h3 class="font-display text-4xl tracking-wide text-white mb-2">MONTHLY GRIND</h3>
+            <div class="flex items-baseline gap-1 my-4">
+              <span class="font-display text-5xl text-amberGold">₹4,499</span>
+              <span class="font-mono text-xs text-white/60">/ MONTH</span>
+            </div>
+            <p class="text-sm text-white/75 mb-6">Zero lock-in monthly access with structured onboarding and baseline strength testing.</p>
+            <ul class="space-y-3 text-sm text-white/85 mb-8 border-t border-white/10 pt-5">
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Unlimited 6-Zone Club Access</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Monthly InBody 770 Body Scan</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> 2 Group HIIT / Boxing Classes</li>
+            </ul>
+          </div>
+          <button onclick="openTrialModal('Monthly Grind — ₹4,499/mo')" class="w-full py-3.5 px-5 rounded-xl bg-white/10 hover:bg-amberGold text-white hover:text-pureBlack font-mono text-xs font-semibold tracking-widest uppercase transition-all cursor-pointer">
+            SELECT MONTHLY →
+          </button>
+        </div>
+
+        <!-- Tier 3: Quarterly Transformation (Featured Gold Accent) -->
+        <div class="relative rounded-3xl bg-pureBlack border-2 border-amberGold p-7 flex flex-col justify-between shadow-2xl transform lg:-translate-y-3">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amberGold text-pureBlack font-mono text-[10px] font-bold tracking-widest uppercase">
+            MOST POPULAR • 90-DAY PROTOCOL
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-4 mt-1">
+              <span class="font-mono text-xs tracking-widest uppercase text-amberGold">90-DAY OVERHAUL</span>
+              <span class="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-amberGold/20 text-amberGold">SAVE 20%</span>
+            </div>
+            <h3 class="font-display text-4xl tracking-wide text-white mb-2">QUARTERLY TRANSFORMATION</h3>
+            <div class="flex items-baseline gap-1 my-4">
+              <span class="font-display text-5xl text-amberGold">₹10,999</span>
+              <span class="font-mono text-xs text-white/60">/ 3 MONTHS</span>
+            </div>
+            <p class="text-sm text-white/80 mb-6">Our signature 12-week body recomposition blueprint backed by custom nutrition and recovery.</p>
+            <ul class="space-y-3 text-sm text-white/90 mb-8 border-t border-white/15 pt-5">
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Unlimited All-Zone & Group Classes</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> 3x Personal Coaching Check-ins</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Custom Macro & Supplement Plan</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> 4x Cold Plunge & Sauna Sessions</li>
+            </ul>
+          </div>
+          <button onclick="openTrialModal('Quarterly Transformation — ₹10,999')" class="w-full py-4 px-5 rounded-xl bg-amberGold hover:bg-white text-pureBlack font-mono text-xs font-bold tracking-widest uppercase transition-all shadow-lg cursor-pointer">
+            START TRANSFORMATION →
+          </button>
+        </div>
+
+        <!-- Tier 4: Annual Athlete -->
+        <div class="rounded-3xl bg-white/[0.05] border border-white/15 p-7 flex flex-col justify-between hover:border-amberGold/70 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs tracking-widest uppercase text-amberGold">FOUNDER'S TIER</span>
+              <span class="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-white/10 text-white">365 DAYS</span>
+            </div>
+            <h3 class="font-display text-4xl tracking-wide text-white mb-2">ANNUAL ATHLETE</h3>
+            <div class="flex items-baseline gap-1 my-4">
+              <span class="font-display text-5xl text-amberGold">₹32,999</span>
+              <span class="font-mono text-xs text-white/60">/ YEAR</span>
+            </div>
+            <p class="text-sm text-white/75 mb-6">Unrestricted year-round club privileges, priority event entries, and unlimited recovery lounge access.</p>
+            <ul class="space-y-3 text-sm text-white/85 mb-8 border-t border-white/10 pt-5">
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Unlimited 365-Day Club & Class Access</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Unlimited Ice Bath & Infrared Sauna</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> Free Entry to HYROX Club Events</li>
+              <li class="flex items-center gap-2.5"><span class="text-amberGold">✓</span> 4 Guest Passes for Friends</li>
+            </ul>
+          </div>
+          <button onclick="openTrialModal('Annual Athlete — ₹32,999/yr')" class="w-full py-3.5 px-5 rounded-xl bg-white/10 hover:bg-amberGold text-white hover:text-pureBlack font-mono text-xs font-semibold tracking-widest uppercase transition-all cursor-pointer">
+            JOIN ANNUAL CLUB →
+          </button>
+        </div>
+      </div>
+
+      <!-- Elite Coaches Spotlight Strip -->
+      <div id="coaches" class="mt-24 pt-16 border-t border-white/15">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div>
+            <span class="font-mono text-xs tracking-[0.28em] uppercase text-amberGold block mb-2">PERFORMANCE DIRECTORATE</span>
+            <h3 class="font-display text-4xl sm:text-5xl text-white uppercase">LED BY CERTIFIED STRENGTH SPECIALISTS.</h3>
+          </div>
+          <button onclick="openTrialModal('1-on-1 Coach Assessment')" class="self-start sm:self-auto font-mono text-xs tracking-widest uppercase text-amberGold hover:underline cursor-pointer">
+            BOOK 1-ON-1 ASSESSMENT →
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="group rounded-2xl overflow-hidden bg-pureBlack/60 border border-white/10">
+            <div class="h-72 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=800&q=80" alt="Coach Vikram Rathore" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div class="p-5">
+              <span class="font-mono text-[10px] tracking-widest uppercase text-amberGold">HEAD OF STRENGTH • CSCS</span>
+              <h4 class="font-display text-2xl text-white mt-1">VIKRAM RATHORE</h4>
+              <p class="text-xs text-white/70 mt-1">National Powerlifting Medalist & Biomechanics Specialist</p>
+            </div>
+          </div>
+
+          <div class="group rounded-2xl overflow-hidden bg-pureBlack/60 border border-white/10">
+            <div class="h-72 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=800&q=80" alt="Coach Ananya Shekhawat" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div class="p-5">
+              <span class="font-mono text-[10px] tracking-widest uppercase text-amberGold">CONDITIONING & HYROX LEAD</span>
+              <h4 class="font-display text-2xl text-white mt-1">ANANYA SHEKHAWAT</h4>
+              <p class="text-xs text-white/70 mt-1">Metabolic Conditioning & Endurance Performance Architect</p>
+            </div>
+          </div>
+
+          <div class="group rounded-2xl overflow-hidden bg-pureBlack/60 border border-white/10">
+            <div class="h-72 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=800&q=80" alt="Coach Kabir Chauhan" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div class="p-5">
+              <span class="font-mono text-[10px] tracking-widest uppercase text-amberGold">COMBAT & MOBILITY DIRECTOR</span>
+              <h4 class="font-display text-2xl text-white mt-1">KABIR CHAUHAN</h4>
+              <p class="text-xs text-white/70 mt-1">Pro Boxing Coach & Sports Rehabilitation Therapist</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       6. CRISP WHITE HIGH-CONTRAST FAQ ACCORDION SECTION (#ffffff)
+  ========================================================== -->
+  <section id="faq" class="bg-crispWhite text-pureBlack py-24 sm:py-32 px-5 sm:px-10">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-14">
+        <span class="font-mono text-xs tracking-[0.28em] uppercase text-indigoDeep font-semibold block mb-3">ESSENTIAL INTEL</span>
+        <h2 class="font-display text-5xl sm:text-7xl leading-[0.92] tracking-tight text-pureBlack uppercase">
+          FREQUENTLY ASKED QUESTIONS.
+        </h2>
+      </div>
+
+      <!-- Smoothly Expanding + / × Accordion Items -->
+      <div class="divide-y divide-black/15 border-y border-black/15" id="faq-container">
+        <!-- FAQ 1 -->
+        <div class="faq-item py-6">
+          <button class="faq-trigger w-full flex items-center justify-between text-left gap-4 cursor-pointer group">
+            <span class="font-display text-2xl sm:text-3xl tracking-wide text-pureBlack group-hover:text-indigoDeep transition-colors">
+              01. WHAT ARE WORKOUT ADDA'S OPERATING TIMINGS?
+            </span>
+            <span class="faq-icon w-10 h-10 rounded-full border border-black/20 flex items-center justify-center font-mono text-xl transition-transform duration-300 shrink-0">+</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="pt-4 text-black/75 text-base leading-relaxed max-w-3xl">
+              We are open Monday through Saturday from <strong>05:00 AM to 11:00 PM</strong>, and Sundays from <strong>07:00 AM to 04:00 PM</strong> for open turf conditioning, lifting, and recovery lounge access. Peak floor supervision is active at all hours.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item py-6">
+          <button class="faq-trigger w-full flex items-center justify-between text-left gap-4 cursor-pointer group">
+            <span class="font-display text-2xl sm:text-3xl tracking-wide text-pureBlack group-hover:text-indigoDeep transition-colors">
+              02. CAN I BOOK A COMPLIMENTARY TRIAL SESSION BEFORE JOINING?
+            </span>
+            <span class="faq-icon w-10 h-10 rounded-full border border-black/20 flex items-center justify-center font-mono text-xl transition-transform duration-300 shrink-0">+</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="pt-4 text-black/75 text-base leading-relaxed max-w-3xl">
+              Yes. First-time Jaipur residents can claim a complimentary <strong>1-Day VIP Club Trial</strong> including a tour of all 6 zones, an InBody 770 body composition scan, and a full workout session. Click "JOIN NOW" anywhere on this page to reserve your slot.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item py-6">
+          <button class="faq-trigger w-full flex items-center justify-between text-left gap-4 cursor-pointer group">
+            <span class="font-display text-2xl sm:text-3xl tracking-wide text-pureBlack group-hover:text-indigoDeep transition-colors">
+              03. HOW DO PERSONAL TRAINING & TRANSFORMATION COACHING WORK?
+            </span>
+            <span class="faq-icon w-10 h-10 rounded-full border border-black/20 flex items-center justify-center font-mono text-xl transition-transform duration-300 shrink-0">+</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="pt-4 text-black/75 text-base leading-relaxed max-w-3xl">
+              Every new member begins with a 45-minute movement screen and strength diagnostic. You can train independently with our structured floor programming or pair with a dedicated CSCS-certified personal coach for 12-week hypertrophy, fat loss, or athletic performance blocks.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item py-6">
+          <button class="faq-trigger w-full flex items-center justify-between text-left gap-4 cursor-pointer group">
+            <span class="font-display text-2xl sm:text-3xl tracking-wide text-pureBlack group-hover:text-indigoDeep transition-colors">
+              04. DO YOU PROVIDE CUSTOM DIET & NUTRITION CONSULTATION?
+            </span>
+            <span class="faq-icon w-10 h-10 rounded-full border border-black/20 flex items-center justify-center font-mono text-xl transition-transform duration-300 shrink-0">+</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="pt-4 text-black/75 text-base leading-relaxed max-w-3xl">
+              Absolutely. Our in-house sports nutritionists craft sustainable, Indian-kitchen-friendly macro blueprints tailored to vegetarian, eggetarian, or non-vegetarian preferences—updated bi-weekly based on your InBody scan progress.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       BOLD ARCHITECTURAL FOOTER (#210c6d)
+  ========================================================== -->
+  <footer id="footer" class="bg-indigoDeep text-white pt-20 pb-12 px-5 sm:px-10 border-t border-white/15">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-white/15">
+        <!-- Brand Column -->
+        <div class="md:col-span-5">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg bg-amberGold flex items-center justify-center text-pureBlack">
+              <svg class="w-6 h-6" viewBox="0 0 32 32" fill="none">
+                <path d="M4 10H8V22H4V10Z" fill="currentColor"/>
+                <path d="M24 10H28V22H24V10Z" fill="currentColor"/>
+                <path d="M10 7H13V25H10V7Z" fill="currentColor"/>
+                <path d="M19 7H22V25H19V7Z" fill="currentColor"/>
+                <rect x="2" y="14.5" width="28" height="3" fill="currentColor"/>
+              </svg>
+            </div>
+            <span class="font-display text-3xl tracking-wider">WORKOUT ADDA</span>
+          </div>
+          <p class="text-white/75 text-sm leading-relaxed max-w-sm mb-6">
+            Jaipur’s flagship architectural strength, conditioning, and recovery sanctuary. Built for those who take their physical craft seriously.
+          </p>
+          <div class="flex items-center gap-3">
+            <a href="#top" class="px-4 py-2 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack font-mono text-xs transition-colors">INSTAGRAM</a>
+            <a href="#top" class="px-4 py-2 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack font-mono text-xs transition-colors">YOUTUBE</a>
+            <a href="#top" class="px-4 py-2 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack font-mono text-xs transition-colors">STRAVA CLUB</a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="md:col-span-3">
+          <h4 class="font-mono text-xs tracking-[0.25em] uppercase text-amberGold mb-5">EXPLORE</h4>
+          <ul class="space-y-3 text-sm text-white/80">
+            <li><a href="#zones" class="hover:text-amberGold transition-colors">01. Signature Training Zones</a></li>
+            <li><a href="#manifesto" class="hover:text-amberGold transition-colors">02. Club Manifesto & Metrics</a></li>
+            <li><a href="#memberships" class="hover:text-amberGold transition-colors">03. Membership Tiers</a></li>
+            <li><a href="#coaches" class="hover:text-amberGold transition-colors">04. Performance Coaches</a></li>
+            <li><a href="#faq" class="hover:text-amberGold transition-colors">05. Essential FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Address & Contact -->
+        <div class="md:col-span-4">
+          <h4 class="font-mono text-xs tracking-[0.25em] uppercase text-amberGold mb-5">HEADQUARTERS</h4>
+          <p class="text-sm text-white/85 leading-relaxed mb-3">
+            Level 3, Apex Icon Tower, Sardar Patel Marg,<br>
+            C-Scheme, Jaipur, Rajasthan 302001
+          </p>
+          <p class="font-mono text-xs text-white/70 mb-4">
+            CONCIERGE: +91 98290 44108<br>
+            EMAIL: concierge@workoutadda.in
+          </p>
+          <button onclick="openTrialModal('VIP Club Tour & Trial')" class="px-5 py-3 rounded-xl bg-amberGold text-pureBlack font-mono text-xs font-bold tracking-widest uppercase hover:bg-white transition-colors cursor-pointer">
+            BOOK A VISIT →
+          </button>
+        </div>
+      </div>
+
+      <!-- Massive Architectural Display Wordmark -->
+      <div class="pt-10 pb-6 overflow-hidden">
+        <div class="font-display text-[15vw] lg:text-[13.5rem] leading-[0.82] tracking-tight text-white/[0.08] select-none text-center uppercase">
+          WORKOUT ADDA
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-white/50 pt-4">
+        <p>© 2026 WORKOUT ADDA FITNESS CLUB PVT. LTD. ALL RIGHTS RESERVED.</p>
+        <p>DESIGNED FOR RELENTLESS PERFORMANCE • JAIPUR</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       FLOATING QUICK-ACTION TRIAL / WHATSAPP WIDGET (BOTTOM RIGHT)
+  ========================================================== -->
+  <div class="fixed bottom-5 right-5 z-40 flex items-center gap-2.5">
+    <button onclick="openTrialModal('Free 1-Day VIP Club Pass')" class="group flex items-center gap-3 pl-4 pr-3 py-3 rounded-full bg-amberGold hover:bg-white text-pureBlack shadow-2xl border border-black/15 transition-all duration-300 cursor-pointer">
+      <span class="font-mono text-xs font-bold tracking-wider uppercase">CLAIM FREE TRIAL</span>
+      <span class="w-8 h-8 rounded-full bg-pureBlack text-amberGold flex items-center justify-center text-sm group-hover:scale-110 transition-transform">⚡</span>
+    </button>
+  </div>
+
+  <!-- =========================================================
+       INTERACTIVE EVENT REGISTRATION / PASS MODAL (TRI-COLOR ACCENT)
+  ========================================================== -->
+  <div id="event-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="relative w-full max-w-xl rounded-3xl bg-pureBlack border border-white/20 overflow-hidden shadow-2xl">
+      <!-- Tri-Color Accent Bar -->
+      <div class="h-2 w-full flex">
+        <div class="w-1/3 bg-indigoDeep"></div>
+        <div class="w-1/3 bg-amberGold"></div>
+        <div class="w-1/3 bg-forestSlate"></div>
+      </div>
+
+      <div class="p-6 sm:p-8">
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.25em] uppercase text-amberGold">ARENA CHAMPIONSHIP • DEC 20, 2026</span>
+            <h3 class="font-display text-4xl text-white tracking-wide mt-1">HYROX & STRENGTH SHOWDOWN</h3>
+          </div>
+          <button onclick="closeEventModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack text-white flex items-center justify-center font-mono text-sm cursor-pointer">✕</button>
+        </div>
+
+        <p class="text-sm text-white/75 mb-6 leading-relaxed">
+          8 functional workout stations interspersed with 1km turf runs, culminating in a max-effort deadlift ladder. Open to solo athletes and doubles teams.
+        </p>
+
+        <!-- Two Pass Tiers -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <label class="cursor-pointer">
+            <input type="radio" name="event_tier" value="Competitor Entry — ₹1,499" checked class="peer sr-only" />
+            <div class="p-4 rounded-2xl border-2 border-white/15 peer-checked:border-amberGold peer-checked:bg-amberGold/10 transition-all">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-mono text-[10px] uppercase text-amberGold">ATHLETE TIER</span>
+                <span class="font-display text-2xl text-white">₹1,499</span>
+              </div>
+              <p class="font-display text-xl text-white">COMPETITOR PASS</p>
+              <p class="text-xs text-white/65 mt-1">Official race bib, finisher tee, recovery lounge & ₹50K prize pool eligibility.</p>
+            </div>
+          </label>
+
+          <label class="cursor-pointer">
+            <input type="radio" name="event_tier" value="VIP Spectator & Shake Pass — ₹499" class="peer sr-only" />
+            <div class="p-4 rounded-2xl border-2 border-white/15 peer-checked:border-amberGold peer-checked:bg-amberGold/10 transition-all">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-mono text-[10px] uppercase text-amberGold">ARENA ACCESS</span>
+                <span class="font-display text-2xl text-white">₹499</span>
+              </div>
+              <p class="font-display text-xl text-white">VIP SPECTATOR PASS</p>
+              <p class="text-xs text-white/65 mt-1">Ringside deck access, live DJ set, and 1 complimentary protein shake.</p>
+            </div>
+          </label>
+        </div>
+
+        <form id="event-form" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input type="text" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white placeholder-white/45 text-sm focus:outline-none focus:border-amberGold" />
+            <input type="tel" required placeholder="WhatsApp Number (+91)" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white placeholder-white/45 text-sm focus:outline-none focus:border-amberGold" />
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-amberGold hover:bg-white text-pureBlack font-mono text-xs font-bold tracking-widest uppercase transition-colors cursor-pointer">
+            CONFIRM REGISTRATION →
+          </button>
+        </form>
+        <div id="event-success" class="hidden mt-4 p-4 rounded-xl bg-forestSlate border border-amberGold text-sm text-white">
+          <strong class="text-amberGold font-mono uppercase block mb-1">PASS RESERVED!</strong>
+          Your digital QR pass and heat schedule have been dispatched to your WhatsApp.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       INSTANT TRIAL / MEMBERSHIP BOOKING MODAL
+  ========================================================== -->
+  <div id="trial-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="relative w-full max-w-lg rounded-3xl bg-indigoDeep border border-white/20 overflow-hidden shadow-2xl">
+      <!-- Tri-Color Accent Bar -->
+      <div class="h-2 w-full flex">
+        <div class="w-1/3 bg-amberGold"></div>
+        <div class="w-1/3 bg-crispWhite"></div>
+        <div class="w-1/3 bg-forestSlate"></div>
+      </div>
+
+      <div class="p-6 sm:p-8">
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.25em] uppercase text-amberGold">WORKOUT ADDA CONCIERGE</span>
+            <h3 class="font-display text-4xl text-white tracking-wide mt-1">LOCK IN YOUR ACCESS</h3>
+          </div>
+          <button onclick="closeTrialModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-amberGold hover:text-pureBlack text-white flex items-center justify-center font-mono text-sm cursor-pointer">✕</button>
+        </div>
+
+        <div class="mb-5 px-4 py-2.5 rounded-xl bg-black/40 border border-amberGold/40 flex items-center justify-between">
+          <span class="font-mono text-[11px] text-white/70 uppercase">SELECTED:</span>
+          <span id="trial-selected-plan" class="font-mono text-xs font-bold text-amberGold">All-Access Club Trial</span>
+        </div>
+
+        <form id="trial-form" class="space-y-3.5">
+          <input type="text" required placeholder="Your Full Name" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white placeholder-white/50 text-sm focus:outline-none focus:border-amberGold" />
+          <input type="tel" required placeholder="Mobile / WhatsApp Number" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white placeholder-white/50 text-sm focus:outline-none focus:border-amberGold" />
+          <select class="w-full px-4 py-3 rounded-xl bg-pureBlack/80 border border-white/15 text-white text-sm focus:outline-none focus:border-amberGold">
+            <option value="Morning (06:00 AM - 10:00 AM)">Preferred Slot: Morning (06:00 AM – 10:00 AM)</option>
+            <option value="Afternoon (12:00 PM - 04:00 PM)">Preferred Slot: Afternoon (12:00 PM – 04:00 PM)</option>
+            <option value="Evening Peak (05:00 PM - 09:30 PM)">Preferred Slot: Evening Peak (05:00 PM – 09:30 PM)</option>
+          </select>
+          <button type="submit" class="w-full py-4 rounded-xl bg-amberGold hover:bg-white text-pureBlack font-mono text-xs font-bold tracking-widest uppercase transition-colors cursor-pointer">
+            GENERATE INSTANT ACCESS PASS →
+          </button>
+        </form>
+
+        <div id="trial-success" class="hidden mt-4 p-4 rounded-xl bg-pureBlack/80 border border-amberGold text-sm text-white">
+          <strong class="text-amberGold font-mono uppercase block mb-1">ACCESS CONFIRMED!</strong>
+          Our Jaipur Front Desk Concierge has texted your VIP Gate Pass & InBody Scan voucher.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       INTERACTIVE JAVASCRIPT (MENU, SCROLL SYNC, COUNTERS, MODALS)
+  ========================================================== -->
+  <script>
+    // 1. Full-Screen Menu Drawer Logic
+    const menuDrawer = document.getElementById('menu-drawer');
+    const menuOpenBtn = document.getElementById('menu-open-btn');
+    const menuCloseBtn = document.getElementById('menu-close-btn');
+    const drawerLinks = document.querySelectorAll('.drawer-link');
+
+    function openDrawer() {
+      menuDrawer.classList.add('drawer-open');
+      menuDrawer.classList.remove('pointer-events-none');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      menuDrawer.classList.remove('drawer-open');
+      menuDrawer.classList.add('pointer-events-none');
+      document.body.style.overflow = '';
+    }
+
+    menuOpenBtn.addEventListener('click', openDrawer);
+    menuCloseBtn.addEventListener('click', closeDrawer);
+    drawerLinks.forEach(link => link.addEventListener('click', closeDrawer));
+
+    // 2. Scroll-Triggered Animated Metric Counters
+    const counters = document.querySelectorAll('.counter');
+    let countersStarted = false;
+
+    const animateCounters = () => {
+      counters.forEach(counter => {
+        const target = parseFloat(counter.getAttribute('data-target'));
+        const decimals = parseInt(counter.getAttribute('data-decimals') || '0', 10);
+        const suffix = counter.getAttribute('data-suffix') || '';
+        const useComma = counter.getAttribute('data-comma') === 'true';
+        const duration = 1800;
+        const startTime = performance.now();
+
+        const update = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease-out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const currentVal = target * eased;
+
+          let formatted = decimals > 0
+            ? currentVal.toFixed(decimals)
+            : Math.floor(currentVal).toString();
+
+          if (useComma) {
+            formatted = parseInt(formatted, 10).toLocaleString('en-US');
+          }
+
+          counter.textContent = formatted + suffix;
+
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            let finalFormatted = decimals > 0 ? target.toFixed(decimals) : target.toString();
+            if (useComma) finalFormatted = parseInt(finalFormatted, 10).toLocaleString('en-US');
+            counter.textContent = finalFormatted + suffix;
+          }
+        };
+
+        requestAnimationFrame(update);
+      });
+    };
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !countersStarted) {
+          countersStarted = true;
+          animateCounters();
+        }
+      });
+    }, { threshold: 0.35 });
+
+    const statsGrid = document.getElementById('stats-grid');
+    if (statsGrid) statsObserver.observe(statsGrid);
+
+    // 3. Sticky Split-Screen Signature Zones Scroll & Click Sync
+    const zoneCards = document.querySelectorAll('.zone-card');
+    const zoneCounter = document.getElementById('zone-counter');
+    const zoneActiveTag = document.getElementById('zone-active-tag');
+    const zoneActiveTitle = document.getElementById('zone-active-title');
+    const totalZones = zoneCards.length;
+
+    function setActiveZone(index) {
+      // Update images with crossfade & subtle zoom
+      for (let i = 0; i < totalZones; i++) {
+        const img = document.getElementById(`zone-img-${i}`);
+        if (!img) continue;
+        if (i === index) {
+          img.classList.remove('opacity-0', 'scale-105');
+          img.classList.add('opacity-100', 'scale-100');
+        } else {
+          img.classList.remove('opacity-100', 'scale-100');
+          img.classList.add('opacity-0', 'scale-105');
+        }
+      }
+
+      // Update cards styling
+      zoneCards.forEach((card, idx) => {
+        const badge = card.querySelector('span.rounded-full');
+        if (idx === index) {
+          card.classList.remove('border-white/10', 'bg-white/[0.03]');
+          card.classList.add('border-amberGold', 'bg-white/[0.08]');
+          if (badge) {
+            badge.classList.remove('bg-white/10', 'text-white');
+            badge.classList.add('bg-amberGold', 'text-pureBlack');
+          }
+          // Update overlay text & counter
+          zoneCounter.textContent = `0${index + 1} / 0${totalZones}`;
+          zoneActiveTag.textContent = card.getAttribute('data-tag');
+          zoneActiveTitle.textContent = card.getAttribute('data-title');
+        } else {
+          card.classList.remove('border-amberGold', 'bg-white/[0.08]');
+          card.classList.add('border-white/10', 'bg-white/[0.03]');
+          if (badge) {
+            badge.classList.remove('bg-amberGold', 'text-pureBlack');
+            badge.classList.add('bg-white/10', 'text-white');
+          }
+        }
+      });
+    }
+
+    // Click to activate zone
+    zoneCards.forEach((card, idx) => {
+      card.addEventListener('click', () => setActiveZone(idx));
+    });
+
+    // Scroll intersection sync for zones
+    const zoneObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = parseInt(entry.target.getAttribute('data-zone'), 10);
+          setActiveZone(idx);
+        }
+      });
+    }, {
+      rootMargin: '-35% 0px -45% 0px',
+      threshold: 0.1
+    });
+
+    zoneCards.forEach(card => zoneObserver.observe(card));
+
+    // 4. Smoothly Expanding FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const trigger = item.querySelector('.faq-trigger');
+      const content = item.querySelector('.faq-content');
+      const icon = item.querySelector('.faq-icon');
+
+      trigger.addEventListener('click', () => {
+        const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+        // Close all others
+        faqItems.forEach(other => {
+          other.querySelector('.faq-content').style.maxHeight = '0px';
+          const otherIcon = other.querySelector('.faq-icon');
+          otherIcon.textContent = '+';
+          otherIcon.classList.remove('bg-pureBlack', 'text-white', 'rotate-45');
+        });
+
+        if (!isOpen) {
+          content.style.maxHeight = content.scrollHeight + 'px';
+          icon.textContent = '×';
+          icon.classList.add('bg-pureBlack', 'text-white');
+        }
+      });
+    });
+
+    // 5. Event & Trial Modal Controls
+    const eventModal = document.getElementById('event-modal');
+    const trialModal = document.getElementById('trial-modal');
+    const trialSelectedPlan = document.getElementById('trial-selected-plan');
+
+    function openEventModal() {
+      document.getElementById('event-success').classList.add('hidden');
+      eventModal.classList.remove('hidden');
+      eventModal.classList.add('flex');
+    }
+
+    function closeEventModal() {
+      eventModal.classList.add('hidden');
+      eventModal.classList.remove('flex');
+    }
+
+    function openTrialModal(planName) {
+      if (planName) trialSelectedPlan.textContent = planName;
+      document.getElementById('trial-success').classList.add('hidden');
+      trialModal.classList.remove('hidden');
+      trialModal.classList.add('flex');
+    }
+
+    function closeTrialModal() {
+      trialModal.classList.add('hidden');
+      trialModal.classList.remove('flex');
+    }
+
+    // Close modals on backdrop click or Escape key
+    [eventModal, trialModal].forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeEventModal();
+          closeTrialModal();
+        }
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDrawer();
+        closeEventModal();
+        closeTrialModal();
+      }
+    });
+
+    // Form Submissions
+    document.getElementById('event-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('event-success').classList.remove('hidden');
+      e.target.reset();
+    });
+
+    document.getElementById('trial-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('trial-success').classList.remove('hidden');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
